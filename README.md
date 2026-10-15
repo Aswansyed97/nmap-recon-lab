@@ -1,8 +1,6 @@
 <div align="center">
 
-# 🔍 Nmap Recon Lab
-
-### Hands-on network reconnaissance & port scanning with Nmap — host discovery, service/version detection, and OS fingerprinting.
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:4682B4,100:1a1a2e&height=200&section=header&text=Nmap%20Recon%20Lab&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Network%20Reconnaissance%20%26%20Port%20Scanning&descAlignY=60&descSize=18" width="100%"/>
 
 ![Nmap](https://img.shields.io/badge/Nmap-Scanning-4682B4?style=for-the-badge&logo=nmap&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/Kali-Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
@@ -14,11 +12,24 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [The Recon Workflow](#️-the-recon-workflow)
+- [Core Scan Types](#-core-scan-types)
+- [Commands I Practiced](#-commands-i-practiced)
+- [Scan Results](#-scan-results)
+- [Key Takeaways](#-key-takeaways)
+- [Repo Structure](#-repo-structure)
+- [Skills Demonstrated](#-skills-demonstrated)
+
+---
+
 ## 📌 Overview
 
 Nmap (Network Mapper) is the go-to tool for **network discovery and security auditing**. This repo documents hands-on practice: finding live hosts, mapping open ports, identifying running services and versions, and fingerprinting operating systems — the reconnaissance groundwork every pentester and SOC analyst relies on.
 
-> **Think of it like this:** before you break into (or defend) a building, you walk the perimeter — which doors exist, which are unlocked, what's behind each one, and who's inside. Nmap is that walkthrough, for a network.
+> 💡 **Think of it like this:** before you break into (or defend) a building, you walk the perimeter — which doors exist, which are unlocked, what's behind each one, and who's inside. Nmap is that walkthrough, for a network.
 
 ---
 
@@ -53,13 +64,18 @@ flowchart LR
 
 ## 💻 Commands I Practiced
 
-### 1️⃣ Host Discovery
+<details open>
+<summary><b>1️⃣ Host Discovery</b></summary>
+
 ```bash
 # Find live hosts on a subnet (no port scan)
 nmap -sn 192.168.1.0/24
 ```
+</details>
 
-### 2️⃣ Port Scanning
+<details>
+<summary><b>2️⃣ Port Scanning</b></summary>
+
 ```bash
 # Stealth SYN scan of the top 1000 ports
 sudo nmap -sS 192.168.1.10
@@ -67,30 +83,45 @@ sudo nmap -sS 192.168.1.10
 # Scan all 65535 ports
 sudo nmap -p- 192.168.1.10
 ```
+</details>
 
-### 3️⃣ Service & Version Detection
+<details>
+<summary><b>3️⃣ Service & Version Detection</b></summary>
+
 ```bash
 # What's running, and what version?
 nmap -sV 192.168.1.10
 ```
+</details>
 
-### 4️⃣ OS Detection
+<details>
+<summary><b>4️⃣ OS Detection</b></summary>
+
 ```bash
 # Fingerprint the OS
 sudo nmap -O 192.168.1.10
 ```
+</details>
 
-### 5️⃣ Aggressive All-in-One
+<details>
+<summary><b>5️⃣ Aggressive All-in-One</b></summary>
+
 ```bash
 # Version + OS + default scripts + traceroute
 sudo nmap -A 192.168.1.10
 ```
+</details>
 
-### 6️⃣ Saving Output
+<details>
+<summary><b>6️⃣ Saving Output</b></summary>
+
 ```bash
 # Normal + XML output for reporting
 nmap -sV -oN scan.txt -oX scan.xml 192.168.1.10
 ```
+</details>
+
+> 📋 Full command reference in [`nmap-cheatsheet.md`](nmap-cheatsheet.md) · reusable scan script in [`scripts/recon.sh`](scripts/recon.sh)
 
 ---
 
@@ -114,13 +145,28 @@ nmap -sV -oN scan.txt -oX scan.xml 192.168.1.10
 
 ---
 
+## 📂 Repo Structure
+
+```
+nmap-recon-lab/
+├── README.md              ← you are here
+├── nmap-cheatsheet.md     ← full flag & command reference
+├── scripts/
+│   └── recon.sh           ← reusable staged recon script
+└── screenshots/           ← scan evidence (added as I go)
+```
+
+---
+
 ## 🧠 Skills Demonstrated
 
-`Nmap` · `Network Reconnaissance` · `Port Scanning` · `Service Enumeration` · `OS Fingerprinting` · `NSE Scripting` · `TCP/UDP` · `Kali Linux`
+`Nmap` · `Network Reconnaissance` · `Port Scanning` · `Service Enumeration` · `OS Fingerprinting` · `NSE Scripting` · `TCP/UDP` · `Kali Linux` · `Bash`
 
 ---
 
 <div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,100:4682B4&height=100&section=footer"/>
 
 **Built by [Aswan Syed](https://www.linkedin.com/in/aswan-syed-3154703b4)** · Breaking into cybersecurity, one lab at a time.
 
