@@ -1,173 +1,68 @@
-<div align="center">
+# Nmap Recon Lab
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:4682B4,100:1a1a2e&height=200&section=header&text=Nmap%20Recon%20Lab&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Network%20Reconnaissance%20%26%20Port%20Scanning&descAlignY=60&descSize=18" width="100%"/>
+Notes and scripts from practicing network reconnaissance with Nmap. This is the first thing you do in a pentest or when investigating a host: figure out what's alive, what ports are open, what's running on them, and what OS it is. I'm keeping my commands and findings here as I work through it.
 
-![Nmap](https://img.shields.io/badge/Nmap-Scanning-4682B4?style=for-the-badge&logo=nmap&logoColor=white)
-![Kali Linux](https://img.shields.io/badge/Kali-Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
-![Networking](https://img.shields.io/badge/Networking-TCP%2FUDP-0A66C2?style=for-the-badge)
-![Recon](https://img.shields.io/badge/Phase-Reconnaissance-8B5CF6?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Active-2ea44f?style=for-the-badge)
+> Only scan machines you own or have permission to test. For practice I use my own lab VMs and `scanme.nmap.org`, which Nmap puts up specifically for this.
 
-</div>
+## How I work through a target
 
----
+1. Find live hosts (`-sn`)
+2. Scan ports (`-sS` or `-sT`)
+3. Figure out services and versions (`-sV`)
+4. Detect the OS (`-O`)
+5. Run NSE scripts if something looks interesting (`-sC`, `--script`)
+6. Save the output (`-oN`, `-oX`)
 
-## 📑 Table of Contents
+## Scan types I use most
 
-- [Overview](#-overview)
-- [The Recon Workflow](#️-the-recon-workflow)
-- [Core Scan Types](#-core-scan-types)
-- [Commands I Practiced](#-commands-i-practiced)
-- [Scan Results](#-scan-results)
-- [Key Takeaways](#-key-takeaways)
-- [Repo Structure](#-repo-structure)
-- [Skills Demonstrated](#-skills-demonstrated)
+| Scan | Flag | Notes |
+|------|------|-------|
+| Ping sweep | `-sn` | Just find live hosts, no port scan |
+| SYN scan | `-sS` | Fast, needs root, my default |
+| TCP connect | `-sT` | Works without root, louder |
+| UDP scan | `-sU` | Slow but catches DNS/SNMP/DHCP |
+| Version detection | `-sV` | Service + version |
+| OS detection | `-O` | Needs root |
+| Aggressive | `-A` | sV + O + sC + traceroute in one go |
 
----
+## Commands
 
-## 📌 Overview
-
-Nmap (Network Mapper) is the go-to tool for **network discovery and security auditing**. This repo documents hands-on practice: finding live hosts, mapping open ports, identifying running services and versions, and fingerprinting operating systems — the reconnaissance groundwork every pentester and SOC analyst relies on.
-
-> 💡 **Think of it like this:** before you break into (or defend) a building, you walk the perimeter — which doors exist, which are unlocked, what's behind each one, and who's inside. Nmap is that walkthrough, for a network.
-
----
-
-## 🗺️ The Recon Workflow
-
-```mermaid
-flowchart LR
-    A["🎯 Target<br/>IP / range"] --> B["📡 Host Discovery<br/>-sn ping sweep"]
-    B --> C["🚪 Port Scan<br/>-sS / -sT"]
-    C --> D["🔧 Service & Version<br/>-sV"]
-    D --> E["💻 OS Detection<br/>-O"]
-    E --> F["📜 NSE Scripts<br/>-sC / --script"]
-    F --> G["📝 Output<br/>-oN / -oX"]
-```
-
----
-
-## 🧰 Core Scan Types
-
-| Scan | Flag | What it does |
-|:---|:---|:---|
-| **Ping sweep** | `-sn` | Find live hosts, no port scan |
-| **SYN (stealth) scan** | `-sS` | Fast, half-open TCP scan (needs root) |
-| **TCP connect scan** | `-sT` | Full TCP handshake (no root needed) |
-| **UDP scan** | `-sU` | Scan UDP ports (DNS, SNMP, DHCP) |
-| **Version detection** | `-sV` | Identify service + version |
-| **OS detection** | `-O` | Fingerprint the operating system |
-| **Default scripts** | `-sC` | Run common NSE enumeration scripts |
-| **Aggressive** | `-A` | `-sV -O -sC` + traceroute, all in one |
-
----
-
-## 💻 Commands I Practiced
-
-<details open>
-<summary><b>1️⃣ Host Discovery</b></summary>
-
+Host discovery:
 ```bash
-# Find live hosts on a subnet (no port scan)
 nmap -sn 192.168.1.0/24
 ```
-</details>
 
-<details>
-<summary><b>2️⃣ Port Scanning</b></summary>
-
+Port scanning:
 ```bash
-# Stealth SYN scan of the top 1000 ports
-sudo nmap -sS 192.168.1.10
-
-# Scan all 65535 ports
-sudo nmap -p- 192.168.1.10
+sudo nmap -sS 192.168.1.10          # top 1000 ports
+sudo nmap -p- 192.168.1.10          # all 65535
 ```
-</details>
 
-<details>
-<summary><b>3️⃣ Service & Version Detection</b></summary>
-
+Services and OS:
 ```bash
-# What's running, and what version?
 nmap -sV 192.168.1.10
-```
-</details>
-
-<details>
-<summary><b>4️⃣ OS Detection</b></summary>
-
-```bash
-# Fingerprint the OS
 sudo nmap -O 192.168.1.10
+sudo nmap -A 192.168.1.10           # everything at once
 ```
-</details>
 
-<details>
-<summary><b>5️⃣ Aggressive All-in-One</b></summary>
-
+Saving output:
 ```bash
-# Version + OS + default scripts + traceroute
-sudo nmap -A 192.168.1.10
-```
-</details>
-
-<details>
-<summary><b>6️⃣ Saving Output</b></summary>
-
-```bash
-# Normal + XML output for reporting
 nmap -sV -oN scan.txt -oX scan.xml 192.168.1.10
 ```
-</details>
 
-> 📋 Full command reference in [`nmap-cheatsheet.md`](nmap-cheatsheet.md) · reusable scan script in [`scripts/recon.sh`](scripts/recon.sh)
+There's a longer reference in [nmap-cheatsheet.md](nmap-cheatsheet.md) and a script that runs the stages in order in [scripts/recon.sh](scripts/recon.sh).
 
----
+## Stuff that clicked while practicing
 
-## 📸 Scan Results
+- `-sS` doesn't finish the TCP handshake, that's why it's faster and quieter than `-sT`.
+- A "filtered" port usually means a firewall is dropping the packet, which tells you something on its own.
+- The service version from `-sV` is the useful part. Once you have something like `vsftpd 2.3.4` you can go look up known CVEs for it.
+- Save your output. Scrolling back through terminal history to find what a scan said is annoying.
 
-> _Screenshots of live scans will go here — host discovery, open ports, version detection, and OS fingerprinting._
+## Screenshots
 
-<!-- Example once screenshots are added:
-![Host Discovery](screenshots/01-host-discovery.png)
-![Version Detection](screenshots/02-version-detection.png)
--->
-
----
-
-## 🧠 Key Takeaways
-
-- **`-sS` vs `-sT`** — SYN scan never completes the handshake, so it's faster and quieter; connect scan is louder but needs no root.
-- **Open vs filtered** — "filtered" means a firewall is dropping packets, which is itself useful recon.
-- **`-sV` is gold** — a service version (e.g. `vsftpd 2.3.4`) is often the thread that leads straight to a known CVE.
-- **Always save output** — `-oN`/`-oX` turns a scan into evidence you can cite later.
+Adding my own scan output here as I go.
 
 ---
 
-## 📂 Repo Structure
-
-```
-nmap-recon-lab/
-├── README.md              ← you are here
-├── nmap-cheatsheet.md     ← full flag & command reference
-├── scripts/
-│   └── recon.sh           ← reusable staged recon script
-└── screenshots/           ← scan evidence (added as I go)
-```
-
----
-
-## 🧠 Skills Demonstrated
-
-`Nmap` · `Network Reconnaissance` · `Port Scanning` · `Service Enumeration` · `OS Fingerprinting` · `NSE Scripting` · `TCP/UDP` · `Kali Linux` · `Bash`
-
----
-
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,100:4682B4&height=100&section=footer"/>
-
-**Built by [Aswan Syed](https://www.linkedin.com/in/aswan-syed-3154703b4)** · Breaking into cybersecurity, one lab at a time.
-
-</div>
+Built by Aswan Syed. [LinkedIn](https://www.linkedin.com/in/aswan-syed-3154703b4)
