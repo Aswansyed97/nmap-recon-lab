@@ -1,101 +1,112 @@
-# 🔍 Nmap Cheat Sheet
+# Nmap cheat sheet
 
-A quick-reference for the flags and commands I use most. Grouped by task.
+The flags and commands I actually use, pulled together so I stop re-googling them. Examples use my lab boxes (`192.168.64.13` is Metasploitable, `10.49.140.148` was the TryHackMe box). `<ip>` just means "put the target here."
 
----
-
-## 🎯 Target Specification
-
-| Command | Description |
-|:---|:---|
-| `nmap 192.168.1.10` | Scan a single host |
-| `nmap 192.168.1.1-50` | Scan an IP range |
-| `nmap 192.168.1.0/24` | Scan a whole subnet |
-| `nmap -iL targets.txt` | Scan hosts from a file |
-| `nmap scanme.nmap.org` | Scan by hostname |
-
----
-
-## 📡 Host Discovery
-
-| Command | Description |
-|:---|:---|
-| `nmap -sn 192.168.1.0/24` | Ping sweep (no port scan) |
-| `nmap -Pn 192.168.1.10` | Skip discovery, treat as online |
-| `nmap -PS22,80,443 <t>` | TCP SYN discovery on ports |
-| `nmap -PR 192.168.1.0/24` | ARP discovery (local network) |
-
----
-
-## 🚪 Port Scanning
-
-| Command | Description |
-|:---|:---|
-| `nmap -sS <t>` | SYN / stealth scan (needs root) |
-| `nmap -sT <t>` | TCP connect scan |
-| `nmap -sU <t>` | UDP scan |
-| `nmap -p 80,443 <t>` | Specific ports |
-| `nmap -p- <t>` | All 65,535 ports |
-| `nmap -F <t>` | Fast scan (top 100 ports) |
-| `nmap --top-ports 20 <t>` | Top N most common ports |
-
----
-
-## 🔧 Service, Version & OS
-
-| Command | Description |
-|:---|:---|
-| `nmap -sV <t>` | Service + version detection |
-| `nmap -sV --version-intensity 9 <t>` | Max version accuracy |
-| `nmap -O <t>` | OS detection |
-| `nmap -A <t>` | Aggressive: `-sV -O -sC` + traceroute |
-
----
-
-## 📜 NSE (Nmap Scripting Engine)
-
-| Command | Description |
-|:---|:---|
-| `nmap -sC <t>` | Run default scripts |
-| `nmap --script vuln <t>` | Vulnerability scripts |
-| `nmap --script http-enum <t>` | Enumerate web dirs |
-| `nmap --script smb-os-discovery <t>` | SMB/Windows info |
-
----
-
-## ⏱️ Timing & Performance
-
-| Flag | Description |
-|:---|:---|
-| `-T0` → `-T5` | Slowest (stealth) → fastest (insane) |
-| `--min-rate 1000` | Minimum packets/sec |
-| `-T4` | Common balance of speed + reliability |
-
----
-
-## 📝 Output
-
-| Command | Description |
-|:---|:---|
-| `-oN scan.txt` | Normal output |
-| `-oX scan.xml` | XML output (for reporting tools) |
-| `-oG scan.gnmap` | Grepable output |
-| `-oA scan` | All three formats at once |
-| `-v` / `-vv` | Verbose / very verbose |
-
----
-
-## ⚡ Go-To One-Liners
+## Picking targets
 
 ```bash
-# Quick full recon of one host
-sudo nmap -A -T4 192.168.1.10 -oA full_scan
-
-# Fast "what's alive and what's open" across a subnet
-sudo nmap -sS -F 192.168.1.0/24
-
-# Hunt for known vulns
-sudo nmap -sV --script vuln 192.168.1.10
+nmap 192.168.64.13            # one host
+nmap 192.168.64.1-50          # a range
+nmap 192.168.64.0/24          # the whole subnet
+nmap -iL targets.txt          # read targets from a file
 ```
 
-> ⚠️ **Only scan systems you own or have explicit permission to test.** Unauthorized scanning can be illegal.
+## Finding live hosts
+
+```bash
+nmap -sn 192.168.64.0/24      # ping sweep, no port scan
+nmap -PR 192.168.64.0/24      # ARP discovery (local net, can't be firewalled)
+nmap -Pn <ip>                 # skip discovery, assume it's up (use when ping is blocked)
+```
+
+On a LAN, netdiscover is handy too: `sudo netdiscover -i eth0 -r 192.168.64.0/24`
+
+## Scanning ports
+
+```bash
+sudo nmap -sS <ip>            # SYN / half-open, my default (needs root)
+nmap -sT <ip>                 # full connect, works without root but louder
+sudo nmap -sU --top-ports 20 <ip>   # UDP, keep it small or it takes forever
+```
+
+Picking ports:
+
+```bash
+nmap -p 80,443 <ip>           # specific ports
+nmap -p-  <ip>                # all 65535 (slow, but finds the hidden high ports)
+nmap -F <ip>                  # fast, top 100 only
+```
+
+Quick notes to self:
+- `-sS` never finishes the handshake (sends RST), that's why it's quieter than `-sT`.
+- `-p-` is where I found 9389 and the 49xxx RPC ports that the default scan missed.
+- Don't throw `--min-rate` at UDP, it just drops the probes and you get "no-response" on everything.
+
+## Service / version / OS
+
+```bash
+nmap -sV <ip>                 # what service + version is running
+nmap -O <ip>                  # OS guess (it IS a guess, not a fact)
+nmap -A <ip>                  # everything: -sV + -O + -sC + traceroute
+```
+
+`-A` is loud though. `-O` especially gets flagged by IDS because it sends weird packets.
+
+## NSE scripts
+
+```bash
+nmap -sC <ip>                 # default scripts (same as --script=default)
+nmap --script vuln <ip>       # hunt for known vulns
+nmap --script=banner <ip>     # grab service banners
+```
+
+`-sC` is the one that told me FTP allowed anonymous login and SMB signing was off.
+
+## Timing (-T)
+
+Goes 0 to 5, higher = faster AND louder. I kept mixing this up at first.
+
+```
+-T0 / -T1   slow and quiet (evade detection)
+-T2         polite / slow
+-T3         default
+-T4         fast, what I use in the lab
+-T5         insane, can miss ports if the network lags
+```
+
+`--min-rate 1000` forces a packet rate, separate from -T. Fast but noisy.
+
+## Evasion (mostly beaten by modern firewalls, but good to know)
+
+```bash
+sudo nmap -f <ip>                     # fragment packets
+sudo nmap --data-length 5 <ip>        # pad packets to break the Nmap signature
+sudo nmap -D RND:5 <ip>               # decoys, hide your real IP in fake ones
+```
+
+## Saving output
+
+```bash
+nmap <ip> -oN scan.txt        # normal
+nmap <ip> -oX scan.xml        # xml (for other tools)
+nmap <ip> -oG scan.gnmap      # grepable
+nmap <ip> -oA scan            # all three at once (what I use)
+```
+
+Add `-v` for verbose so you see stuff as it's found.
+
+## The ones I reach for most
+
+```bash
+# full recon of one box
+sudo nmap -A -T4 <ip> -oA fullscan
+
+# what's alive + open across a subnet, fast
+sudo nmap -sS -F 192.168.64.0/24
+
+# find open ports first, then version-scan only those (way faster than -p- -sV)
+sudo nmap -sS -p- <ip>
+nmap -sV -p 21,22,25,139,445 <ip>
+```
+
+Only scan stuff you own or have permission to. For me that's my own VMs and TryHackMe.
