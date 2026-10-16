@@ -1,0 +1,119 @@
+$ sudo nmap -A -f -v --data-length 5 -p22,23,25,145,445 192.168.64.13 -T2
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-15 21:20 -0700
+NSE: Loaded 158 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 21:20
+Completed NSE at 21:20, 0.00s elapsed
+Initiating NSE at 21:20
+Completed NSE at 21:20, 0.00s elapsed
+Initiating NSE at 21:20
+Completed NSE at 21:20, 0.00s elapsed
+Initiating ARP Ping Scan at 21:20
+Scanning 192.168.64.13 [1 port]
+Completed ARP Ping Scan at 21:20, 0.45s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 21:20
+Completed Parallel DNS resolution of 1 host. at 21:20, 0.50s elapsed
+Initiating SYN Stealth Scan at 21:20
+Scanning 192.168.64.13 [5 ports]
+Discovered open port 25/tcp on 192.168.64.13
+Discovered open port 23/tcp on 192.168.64.13
+Discovered open port 22/tcp on 192.168.64.13
+Discovered open port 445/tcp on 192.168.64.13
+Completed SYN Stealth Scan at 21:20, 2.01s elapsed (5 total ports)
+Initiating Service scan at 21:20
+Scanning 4 services on 192.168.64.13
+Completed Service scan at 21:20, 6.11s elapsed (4 services on 1 host)
+Initiating OS detection (try #1) against 192.168.64.13
+Retrying OS detection (try #2) against 192.168.64.13
+NSE: Script scanning 192.168.64.13.
+Initiating NSE at 21:20
+Completed NSE at 21:21, 7.27s elapsed
+Initiating NSE at 21:21
+Completed NSE at 21:21, 0.13s elapsed
+Initiating NSE at 21:21
+Completed NSE at 21:21, 0.00s elapsed
+Nmap scan report for 192.168.64.13
+Host is up (0.0026s latency).
+
+PORT    STATE  SERVICE     VERSION
+22/tcp  open   ssh         OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 60:0f:cf:e1:c0:5f:6a:74:d6:90:24:fa:c4:d5:6c:cd (DSA)
+|_  2048 56:56:24:0f:21:1d:de:a7:2b:ae:61:b1:24:3d:e8:f3 (RSA)
+23/tcp  open   telnet      Linux telnetd
+25/tcp  open   smtp        Postfix smtpd
+| ssl-cert: Subject: commonName=ubuntu804-base.localdomain/organizationName=OCOSA/stateOrProvinceName=There is no such thing outside US/countryName=XX
+| Issuer: commonName=ubuntu804-base.localdomain/organizationName=OCOSA/stateOrProvinceName=There is no such thing outside US/countryName=XX
+| Public Key type: rsa
+| Public Key bits: 1024
+| Signature Algorithm: sha1WithRSAEncryption
+| Not valid before: 2010-03-17T14:07:45
+| Not valid after:  2010-04-16T14:07:45
+| MD5:     dcd9 ad90 6c8f 2f73 74af 383b 2540 8828
+| SHA-1:   ed09 3088 7066 03bf d5dc 2373 99b4 98da 2d4d 31c6
+|_SHA-256: e7a7 fa0d 63e4 57c7 c4a5 9b38 b708 49c6 a70b da6f 830c 7af1 e32d ee43 6de8 13cc
+|_smtp-commands: metasploitable.localdomain, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN
+|_ssl-date: 2026-10-16T03:00:53+00:00; -1h20m14s from scanner time.
+| sslv2: 
+|   SSLv2 supported
+|   ciphers: 
+|     SSL2_DES_64_CBC_WITH_MD5
+|     SSL2_RC4_128_EXPORT40_WITH_MD5
+|     SSL2_RC2_128_CBC_EXPORT40_WITH_MD5
+|     SSL2_DES_192_EDE3_CBC_WITH_MD5
+|     SSL2_RC2_128_CBC_WITH_MD5
+|_    SSL2_RC4_128_WITH_MD5
+145/tcp closed uaac
+445/tcp open   netbios-ssn Samba smbd 3.0.20-Debian (workgroup: WORKGROUP)
+MAC Address: 12:C9:30:EB:95:94 (Unknown)
+Device type: general purpose|WAP|switch|storage-misc
+Running (JUST GUESSING): Linux 2.6.X|2.4.X|3.X (97%), Linksys embedded (96%), ZyXEL embedded (93%), Extreme Networks ExtremeXOS 15.X|16.X (93%), LG embedded (93%)
+OS CPE: cpe:/o:linux:linux_kernel:2.6 cpe:/h:linksys:wrv54g cpe:/o:linux:linux_kernel:2.4 cpe:/o:extremenetworks:extremexos:15 cpe:/o:extremenetworks:extremexos:16 cpe:/h:lg:n4b2nd4 cpe:/o:linux:linux_kernel:2.6.22 cpe:/o:linux:linux_kernel:3
+Aggressive OS guesses: Linux 2.6.9 - 2.6.33 (97%), Linux 2.6.22 - 2.6.23 (96%), Linksys WRV54G WAP (96%), Linux 2.6.22 (95%), Linux 2.6.17 - 2.6.20 (95%), Linux 2.6.24 (94%), Linux 2.6.19 - 2.6.36 (94%), Linux 2.6.9 - 2.6.30 (94%), Linux 2.6.13 - 2.6.32 (94%), Linux 2.4.18 - 2.4.35 (likely embedded) (93%)
+No exact OS matches for host (test conditions non-ideal).
+Uptime guess: 0.027 days (since Thu Oct 15 20:42:28 2026)
+Network Distance: 1 hop
+TCP Sequence Prediction: Difficulty=191 (Good luck!)
+IP ID Sequence Generation: All zeros
+Service Info: Host:  metasploitable.localdomain; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+| nbstat: NetBIOS name: METASPLOITABLE, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| Names:
+|   METASPLOITABLE<00>   Flags: <unique><active>
+|   METASPLOITABLE<03>   Flags: <unique><active>
+|   METASPLOITABLE<20>   Flags: <unique><active>
+|   \x01\x02__MSBROWSE__\x02<01>  Flags: <group><active>
+|   WORKGROUP<00>        Flags: <group><active>
+|   WORKGROUP<1d>        Flags: <unique><active>
+|_  WORKGROUP<1e>        Flags: <group><active>
+|_smb2-time: Protocol negotiation failed (SMB2)
+| smb-security-mode: 
+|   account_used: <blank>
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb-os-discovery: 
+|   OS: Unix (Samba 3.0.20-Debian)
+|   Computer name: metasploitable
+|   NetBIOS computer name: 
+|   Domain name: localdomain
+|   FQDN: metasploitable.localdomain
+|_  System time: 2026-10-15T23:00:52-04:00
+|_clock-skew: mean: -11s, deviation: 2h18m37s, median: -1h20m13s
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   2.56 ms 192.168.64.13
+
+NSE: Script Post-scanning.
+Initiating NSE at 21:21
+Completed NSE at 21:21, 0.00s elapsed
+Initiating NSE at 21:21
+Completed NSE at 21:21, 0.00s elapsed
+Initiating NSE at 21:21
+Completed NSE at 21:21, 0.00s elapsed
+Read data files from: /usr/share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 33.48 seconds
+           Raw packets sent: 44 (3.469KB) | Rcvd: 37 (2.916KB)
