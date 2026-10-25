@@ -6,7 +6,6 @@
   <img src="https://img.shields.io/badge/tool-nmap-36c76f?style=flat-square" alt="nmap"/>
   <img src="https://img.shields.io/badge/lab-metasploitable%202%20%7C%20TryHackMe-2dd4ff?style=flat-square" alt="lab targets"/>
   <img src="https://img.shields.io/badge/includes-wireshark%20captures-informational?style=flat-square" alt="wireshark captures"/>
-  <img src="https://img.shields.io/badge/use-educational%20%2F%20authorized%20only-orange?style=flat-square" alt="educational use only"/>
   <img src="https://img.shields.io/badge/status-active-brightgreen?style=flat-square" alt="status: active"/>
 </p>
 
