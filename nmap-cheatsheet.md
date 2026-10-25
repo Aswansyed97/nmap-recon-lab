@@ -1,6 +1,34 @@
 # Nmap cheat sheet
 
-The flags and commands I actually use, pulled together so I stop re-googling them. Examples use my lab boxes (`192.168.64.13` is Metasploitable, `10.49.140.148` was the TryHackMe box). `<ip>` just means "put the target here."
+<p>
+  <img src="https://img.shields.io/badge/tool-nmap-36c76f?style=flat-square" alt="nmap"/>
+  <img src="https://img.shields.io/badge/type-quick%20reference-2dd4ff?style=flat-square" alt="quick reference"/>
+</p>
+
+The flags and commands I actually use, pulled together so I stop re-googling them. Examples use my lab boxes (`192.168.64.13` is Metasploitable, `10.49.140.148` was the TryHackMe box). `<ip>` just means "put the target here." Full write-up with screenshots and packet captures: [README.md](README.md).
+
+<details>
+<summary><b>Which scan do I actually reach for?</b> (click to expand)</summary>
+
+```mermaid
+flowchart TD
+    Q1{"Just need to know\nwhat's alive?"} -->|yes| SN["-sn ping sweep"]
+    Q1 -->|no| Q2{"On the local\nsubnet?"}
+    Q2 -->|yes| PR["-PR ARP discovery"]
+    Q2 -->|no| Q3{"Have root?"}
+    Q3 -->|yes| SS["-sS SYN scan (default)"]
+    Q3 -->|no| ST["-sT connect scan"]
+    SS --> Q4{"Need UDP services too?\n(DNS/SNMP/DHCP)"}
+    Q4 -->|yes| SU["-sU --top-ports 20"]
+    Q4 -->|no| Q5{"Want detail fast,\nokay being loud?"}
+    Q5 -->|yes| A["-A aggressive"]
+    Q5 -->|no, step by step| SV["-sV then -sC then -O"]
+
+    classDef node fill:#103a37,stroke:#2dd4ff,color:#eafff6;
+    class SN,PR,SS,ST,SU,A,SV node;
+```
+
+</details>
 
 ## Picking targets
 

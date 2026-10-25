@@ -1,4 +1,16 @@
-# Nmap Recon Lab
+<div align="center">
+
+<img src="images/banner.svg" alt="Nmap Recon Lab banner" width="100%"/>
+
+<p>
+  <img src="https://img.shields.io/badge/tool-nmap-36c76f?style=flat-square" alt="nmap"/>
+  <img src="https://img.shields.io/badge/lab-metasploitable%202%20%7C%20TryHackMe-2dd4ff?style=flat-square" alt="lab targets"/>
+  <img src="https://img.shields.io/badge/includes-wireshark%20captures-informational?style=flat-square" alt="wireshark captures"/>
+  <img src="https://img.shields.io/badge/use-educational%20%2F%20authorized%20only-orange?style=flat-square" alt="educational use only"/>
+  <img src="https://img.shields.io/badge/status-active-brightgreen?style=flat-square" alt="status: active"/>
+</p>
+
+</div>
 
 Hands-on network reconnaissance with Nmap, documented command by command with real output from my own lab. Reconnaissance is step one of any pentest or host investigation: find what is alive, what ports are open, what services run on them, and what the operating system is. I ran everything against two deliberately different machines so I could see *why* the same scan behaves differently depending on the target.
 
@@ -13,9 +25,35 @@ Hands-on network reconnaissance with Nmap, documented command by command with re
 
 ---
 
+## The workflow, start to finish
+
+```mermaid
+flowchart LR
+    subgraph P1["Part 1 — Basics"]
+        direction LR
+        A["1 · Host\ndiscovery"] --> B["2 · Scan\ntype"]
+        B --> C["3 · Port\nselection"]
+        C --> D["4 · Service +\nversion"]
+        D --> E["5 · NSE\nscripts"]
+        E --> F["6 · Save\noutput"]
+    end
+    subgraph P2["Part 2 — Advanced"]
+        direction LR
+        G["7 · OS detect /\naggressive"] --> H["8 · Timing\ntemplates"]
+        H --> I["9 · Firewall /\nIDS evasion"]
+        I --> J["10 · Banner\ngrabbing"]
+    end
+    F --> G
+
+    classDef step fill:#103a37,stroke:#36f2b3,color:#eafff6,stroke-width:1px;
+    class A,B,C,D,E,F,G,H,I,J step;
+```
+
 ## Contents
 
 - [Flag quick reference](#flag-quick-reference)
+- [nmap-cheatsheet.md](nmap-cheatsheet.md) — same flags, condensed, no write-up
+- [scripts/recon.sh](scripts/recon.sh) — runs discovery → ports → services → OS back to back
 - **Part 1 — Basics**
   - [1. Host discovery](#1-host-discovery)
   - [2. Scan types (TCP and UDP)](#2-scan-types)
@@ -127,6 +165,27 @@ sudo nmap -sT -p- -v 10.49.140.148
 | `-sT` | 4 | 845s | the OS does the connecting, so Nmap sends almost nothing |
 
 Same open ports, completely different mechanism. `-sS` fires 131,000 raw packets; `-sT` lets the kernel work and sends 4.
+
+```mermaid
+sequenceDiagram
+    participant N as Nmap
+    participant T as Target
+
+    rect rgb(16,58,55)
+    note over N,T: -sS SYN scan — half-open
+    N->>T: SYN
+    T-->>N: SYN-ACK (port open)
+    N->>T: RST (connection dropped, never completes)
+    end
+
+    rect rgb(20,40,60)
+    note over N,T: -sT connect scan — full handshake
+    N->>T: SYN
+    T-->>N: SYN-ACK (port open)
+    N->>T: ACK
+    N->>T: FIN (OS closes the completed connection)
+    end
+```
 
 ### UDP scan `-sU`
 
@@ -337,6 +396,21 @@ That port 1524 banner is a root command prompt advertising itself. The service t
 
 This was the single most useful thing I learned, and the whole reason I scanned two different machines.
 
+```mermaid
+flowchart LR
+    N["Nmap sends SYN"] --> R{Response?}
+    R -->|SYN-ACK| O["open\nservice is listening"]
+    R -->|RST| C["closed\nhost reachable, nothing listening"]
+    R -->|nothing — timeout| F["filtered\nfirewall silently dropping it"]
+
+    classDef open fill:#103a37,stroke:#36f2b3,color:#eafff6;
+    classDef closed fill:#2a1c10,stroke:#ffb36c,color:#ffe6c9;
+    classDef filtered fill:#2a1030,stroke:#ff6cd4,color:#ffd9f5;
+    class O open;
+    class C closed;
+    class F filtered;
+```
+
 | State | Meaning | What you see |
 |-------|---------|--------------|
 | **open** | a service is listening | SYN-ACK reply |
@@ -372,6 +446,17 @@ The first packet has only the SYN flag set (`0x002`):
 | 1. SYN | SYN | 4132337077 | 0 | "here is my starting number" |
 | 2. SYN-ACK | SYN+ACK | 55616001 | 4132337078 | "here is mine, and I ack yours + 1" |
 | 3. ACK | ACK | 4132337078 | 55616002 | "I ack your number + 1" |
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+
+    C->>S: SYN  seq=4132337077
+    S-->>C: SYN-ACK  seq=55616001, ack=4132337078
+    C->>S: ACK  seq=4132337078, ack=55616002
+    note over C,S: handshake complete — each side's "+1" only moves the ACK number, never its own sequence counter
+```
 
 The thing I got wrong at first: the **+1 is in the ACK number, not the sequence number**. Each side keeps its own independent counter, and the +1 is each side confirming it received the other's SYN.
 

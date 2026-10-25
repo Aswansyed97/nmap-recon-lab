@@ -1,0 +1,63 @@
+<svg width="1200" height="260" viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nmap Recon Lab banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1b1e"/>
+      <stop offset="55%" stop-color="#103a37"/>
+      <stop offset="100%" stop-color="#145c4f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#36f2b3"/>
+      <stop offset="100%" stop-color="#2dd4ff"/>
+    </linearGradient>
+    <radialGradient id="sweepFade" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#36f2b3" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#36f2b3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="260" fill="url(#bg)"/>
+
+  <!-- faint grid, evokes a scan/radar display -->
+  <g stroke="#2dd4ff" stroke-opacity="0.08">
+    <line x1="0" y1="40" x2="1200" y2="40"/>
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="140" x2="1200" y2="140"/>
+    <line x1="0" y1="190" x2="1200" y2="190"/>
+    <line x1="0" y1="240" x2="1200" y2="240"/>
+    <line x1="150" y1="0" x2="150" y2="260"/>
+    <line x1="350" y1="0" x2="350" y2="260"/>
+    <line x1="550" y1="0" x2="550" y2="260"/>
+  </g>
+
+  <!-- radar sweep motif, right side -->
+  <g transform="translate(1000,130)" opacity="0.9">
+    <circle r="95" fill="url(#sweepFade)"/>
+    <circle r="95" fill="none" stroke="#36f2b3" stroke-opacity="0.35" stroke-width="1.5"/>
+    <circle r="62" fill="none" stroke="#36f2b3" stroke-opacity="0.3" stroke-width="1.5"/>
+    <circle r="30" fill="none" stroke="#36f2b3" stroke-opacity="0.25" stroke-width="1.5"/>
+    <line x1="0" y1="0" x2="0" y2="-95" stroke="#36f2b3" stroke-opacity="0.4"/>
+    <line x1="0" y1="0" x2="82" y2="-48" stroke="#36f2b3" stroke-opacity="0.4"/>
+    <line x1="0" y1="0" x2="-82" y2="48" stroke="#36f2b3" stroke-opacity="0.2"/>
+    <path d="M0,0 L0,-95 A95,95 0 0,1 82,-48 Z" fill="#36f2b3" opacity="0.18"/>
+    <!-- blips: open ports found -->
+    <circle cx="40" cy="-60" r="4" fill="#2dd4ff"/>
+    <circle cx="-35" cy="20" r="4" fill="#2dd4ff"/>
+    <circle cx="20" cy="55" r="3.5" fill="#36f2b3"/>
+    <circle cx="-60" cy="-30" r="3" fill="#36f2b3" opacity="0.7"/>
+  </g>
+
+  <!-- accent rule -->
+  <rect x="60" y="78" width="6" height="104" fill="url(#accent)" rx="3"/>
+
+  <text x="88" y="118" font-family="'JetBrains Mono','Fira Code',monospace" font-size="46" font-weight="700" fill="#eafff6" letter-spacing="1">
+    NMAP RECON LAB
+  </text>
+  <text x="90" y="150" font-family="'JetBrains Mono','Fira Code',monospace" font-size="17" fill="#8fd9c4">
+    host discovery · port scanning · service/OS fingerprinting · NSE
+  </text>
+
+  <!-- fake terminal prompt line for flavor -->
+  <text x="90" y="186" font-family="'JetBrains Mono','Fira Code',monospace" font-size="15" fill="#5fe3b8" opacity="0.85">
+    $ nmap -sS -sV -O 192.168.1.0/24
+  </text>
+</svg>
